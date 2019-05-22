@@ -26,10 +26,14 @@ class Fighter extends Circle
         this.focusRange = .5;
         
         //Rendering;
-        this.lineSize = 600;
+        this.baseLineSize = 100;
         this.id = id;
     }
     
+    get lineSize(){
+        return this.baseLineSize// * this.facingAngle * 2;
+    }
+
     // Set of actions:
     //  * Shoot
     //  * Move(-1 to 1 (x), -1 to 1(y))
@@ -106,17 +110,17 @@ class Fighter extends Circle
 
     sees(ent){
         //TODO: Solve: detect if player sees or not other player;
-        let minx = this.x + this.cartesianSightX(-this.rangeAngle);
-        let maxx = this.x + this.cartesianSightX(this.rangeAngle);
-        let miny = this.y - this.cartesianSightY(-this.rangeAngle);
-        let maxy = this.y - this.cartesianSightY(this.rangeAngle);
+        let minx = this.x + this.cartesianSightX(-this.rangeAngle) + this.cartesianSightX();
+        let maxx = this.x + this.cartesianSightX(this.rangeAngle) + this.cartesianSightX();
+        let miny = this.y - this.cartesianSightY(-this.rangeAngle) - this.cartesianSightY();
+        let maxy = this.y - this.cartesianSightY(this.rangeAngle) - this.cartesianSightY();
 
         // 500,0 
         // 500, 900 // > 500
 
         // 900, 400
         // 0, 400
-        circle((minx + maxx)/2, this.cartesianSightY(), 30);
+        line(minx, miny, maxx, maxy);
         return (ent.x > minx && ent.x < maxx) && (ent.y > miny && ent.y > maxy) ;
     }
 
