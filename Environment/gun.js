@@ -1,19 +1,19 @@
 class Gun
 {
-
     constructor()
     {
         this.bullets = [];
     }
 
-    shoot(x, y, angle)
+    trigger(x, y, id, angle)
     {
-        this.bullets.push(new Bullet(x, y, angle));
+        this.bullets.push(new Bullet(x, y, id, angle));
     }
 
     update()
     {
         //If bullet should die: remove it from array;
+        //It should die if it runs off screen;
         for (let i = 0; i < this.bullets.length; ++i)
             if (this.bullets[i].update())
                 this.bullets.splice(i, 1);

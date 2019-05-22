@@ -1,11 +1,12 @@
 class Bullet extends Circle
 {
-    constructor(x, y, angle)
+    constructor(x, y, id, angle)
     {
         var theta = angle || 0;
 
         super(x, y, 3);
-
+        
+        this.id = id;
         this.x_ = x;
         this.y_ = y;
 
@@ -15,7 +16,8 @@ class Bullet extends Circle
 
     isTouching(entity)
     {
-        return this.dist(entity) < entity.radius + this.radius;
+        return this.dist(entity) < entity.radius + this.radius &&
+               entity.id != this.id;
     }
 
     dist(entity)

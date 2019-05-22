@@ -14,11 +14,11 @@ class Fighter extends Circle
         this.baseRadius = 10;
         this.maxRadius = this.randomRadius + this.baseRadius;
         this.radius = Math.random() * this.randomRadius + this.baseRadius;
-        
+        this.PI2 = Math.PI * 2
+
         //Shooting related;
         this.maxHits = maxHits;
         this.hitsTaken = 0;
-        this.gun = new Gun();
         this.alive = true;
         
         //Aiming related;
@@ -26,7 +26,7 @@ class Fighter extends Circle
         this.focusRange = .5;
         
         //Rendering;
-        this.lineSize = 300;
+        this.lineSize = 600;
         this.id = id;
     }
     
@@ -38,8 +38,9 @@ class Fighter extends Circle
     shoot()
     {
         if (!this.alive) return;
+
         var angle = this.activeAngle(Math.random() * this.rangeAngle - Math.random() * this.rangeAngle);
-        this.gun.shoot(this.x, this.y, angle);
+        globalGun.trigger(this.x, this.y, this.id, angle);
     }
 
     move(x, y)
@@ -65,10 +66,12 @@ class Fighter extends Circle
     look(amount)
     {
         if (!this.alive) return;
-        var newFA = this.facingAngle + amount / 20;
-
-        if (newFA <= Math.PI * 2 && newFA > 0)
-            this.facingAngle = newFA;
+        this.facingAngle += amount / 5;
+        
+        if(this.facingAngle > this.PI2)
+            this.facingAngle = this.PI2 - this.facingAngle;
+        else if(this.facingAngle < 0)
+            this.facingAngle = this.PI2 + this.facingAngle;
     }
 
     getHit()
@@ -82,15 +85,13 @@ class Fighter extends Circle
 
     update()
     {
-        this.gun.update();
+        if(globalGun.hits(this))this.getHit();
     }
 
     render()
     {
         fill(this.hitsTaken * 255 / this.maxHits, 255 - this.hitsTaken * 255 / this.maxHits, 0);
         super.render();
-
-        this.gun.render();
 
         stroke(0);
 
@@ -101,6 +102,24 @@ class Fighter extends Circle
 
         stroke(0);
     }
+
+
+    sees(ent){
+        //TODO: Solve: detect if player sees or not other player;
+        let minx = this.x + this.cartesianSightX(-this.rangeAngle);
+        let maxx = this.x + this.cartesianSightX(this.rangeAngle);
+        let miny = this.y - this.cartesianSightY(-this.rangeAngle);
+        let maxy = this.y - this.cartesianSightY(this.rangeAngle);
+
+        // 500,0 
+        // 500, 900 // > 500
+
+        // 900, 400
+        // 0, 400
+        circle((minx + maxx)/2, this.cartesianSightY(), 30);
+        return (ent.x > minx && ent.x < maxx) && (ent.y > miny && ent.y > maxy) ;
+    }
+
 
     activeAngle(value)
     {
